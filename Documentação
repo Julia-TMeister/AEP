@@ -1,0 +1,24 @@
+## Instruções de execução
+
+### Ambiente utilizado
+
+O sistema PSE Acolhe foi desenvolvido na linguagem C, utilizando o ambiente de desenvolvimento Dev-C++.
+
+### Como compilar o programa
+
+1. Abra o Dev-C++.
+2. Abra o arquivo `pse_acolhe.c`.
+3. No menu superior, clique em **Executar** e depois em **Compilar** (ou pressione `F9`).
+4. Aguarde a compilação e verifique se não foram apresentados erros.
+
+### Como executar o sistema
+
+1. Após a compilação, clique em **Executar** e depois em **Executar** novamente (ou pressione `F10`).
+2. Uma janela do terminal será aberta.
+3. O menu principal do PSE Acolhe será apresentado.
+4. Digite o número correspondente à funcionalidade desejada e pressione Enter.
+5. Para encerrar o programa, escolha a opção `0 - Sair`.
+
+### Observação
+
+Os registros são armazenados em memória durante a execução do programa. Portanto, ao encerrar o sistema, as informações cadastradas são perdidas.
