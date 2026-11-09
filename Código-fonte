@@ -1,1 +1,294 @@
+#include <stdio.h>
+#include <stdlib.h>
 
+char escolas[100][80];
+char temas[100][80];
+char datas[100][20];
+char publicos[100][80];
+char responsaveis[100][80];
+
+int participantes[100];
+int situacoes[100]; /* 1 planejada, 2 andamento, 3 concluida */
+int total = 0;
+
+
+int textosIguais(char a[], char b[]) {
+    int i = 0;
+    while (a[i] != '\0' && b[i] != '\0') {
+        if (a[i] != b[i]) {
+            return 0;
+        }
+        i++;
+    }
+    if (a[i] == '\0' && b[i] == '\0') {
+        return 1;
+    }
+    return 0;
+}
+
+void mostrarAcao(int i) {
+    printf("\nCodigo: %d\n", i + 1);
+    printf("Escola: %s\n", escolas[i]);
+    printf("Tema: %s\n", temas[i]);
+    printf("Data: %s\n", datas[i]);
+    printf("Publico-alvo: %s\n", publicos[i]);
+    printf("Responsavel: %s\n", responsaveis[i]);
+    printf("Participantes: %d\n", participantes[i]);
+    if (situacoes[i] == 1) {
+        printf("Situacao: Planejada\n");
+    } else if (situacoes[i] == 2) {
+        printf("Situacao: Em andamento\n");
+    } else {
+        printf("Situacao: Concluida\n");
+    }
+}
+
+void cadastrar() {
+    if (total >= 100) {
+        printf("\nLimite de 100 acoes atingido!\n");
+    } else {
+        printf("\n=== CADASTRAR ACAO ===\n");
+        printf("Escola: ");
+        scanf(" %79[^\n]", escolas[total]);
+        printf("Tema: ");
+        scanf(" %79[^\n]", temas[total]);
+        printf("Data (dd/mm/aaaa): ");
+        scanf(" %19[^\n]", datas[total]);
+        printf("Publico-alvo: ");
+        scanf(" %79[^\n]", publicos[total]);
+        printf("Responsavel: ");
+        scanf(" %79[^\n]", responsaveis[total]);
+
+        participantes[total] = -1;
+        while (participantes[total] < 0) {
+            printf("Quantidade de participantes (0 ou mais): ");
+            scanf("%d", &participantes[total]);
+            if (participantes[total] < 0) {
+                printf("A quantidade nao pode ser negativa.\n");
+            }
+        }
+
+        situacoes[total] = 1;
+        total++;
+        printf("\nAcao cadastrada! Situacao: Planejada.\n");
+    }
+}
+
+void listar() {
+    int i;
+    if (total == 0) {
+        printf("\nNenhuma acao cadastrada.\n");
+    } else {
+        for (i = 0; i < total; i++) {
+            mostrarAcao(i);
+        }
+    }
+}
+
+void pesquisar() {
+    int opcao, i, achou = 0;
+    char busca[80];
+
+    printf("\nPesquisar por: 1-Escola  2-Tema  3-Responsavel\n");
+    scanf("%d", &opcao);
+    if (opcao < 1 || opcao > 3) {
+        printf("Opcao invalida.\n");
+    } else {
+        printf("Digite o texto exato: ");
+        scanf(" %79[^\n]", busca);
+        for (i = 0; i < total; i++) {
+            if (opcao == 1 && textosIguais(escolas[i], busca)) {
+                mostrarAcao(i);
+                achou = 1;
+            } else if (opcao == 2 && textosIguais(temas[i], busca)) {
+                mostrarAcao(i);
+                achou = 1;
+            } else if (opcao == 3 && textosIguais(responsaveis[i], busca)) {
+                mostrarAcao(i);
+                achou = 1;
+            }
+        }
+        if (achou == 0) {
+            printf("Nenhuma acao encontrada.\n");
+        }
+    }
+}
+
+void alterar() {
+    int codigo, i;
+    printf("\nCodigo da acao que deseja alterar: ");
+    scanf("%d", &codigo);
+    i = codigo - 1;
+    if (i < 0 || i >= total) {
+        printf("Codigo invalido.\n");
+    } else {
+        mostrarAcao(i);
+        printf("\nDigite os novos dados.\n");
+        printf("Escola: ");
+        scanf(" %79[^\n]", escolas[i]);
+        printf("Tema: ");
+        scanf(" %79[^\n]", temas[i]);
+        printf("Data: ");
+        scanf(" %19[^\n]", datas[i]);
+        printf("Publico-alvo: ");
+        scanf(" %79[^\n]", publicos[i]);
+        printf("Responsavel: ");
+        scanf(" %79[^\n]", responsaveis[i]);
+        participantes[i] = -1;
+        while (participantes[i] < 0) {
+            printf("Participantes (0 ou mais): ");
+            scanf("%d", &participantes[i]);
+        }
+        printf("Dados alterados!\n");
+    }
+}
+
+void atualizarSituacao() {
+    int codigo, i, nova = 0;
+    printf("\nCodigo da acao: ");
+    scanf("%d", &codigo);
+    i = codigo - 1;
+    if (i < 0 || i >= total) {
+        printf("Codigo invalido.\n");
+    } else {
+        while (nova < 1 || nova > 3) {
+            printf("1-Planejada  2-Em andamento  3-Concluida: ");
+            scanf("%d", &nova);
+            if (nova < 1 || nova > 3) {
+                printf("Escolha 1, 2 ou 3.\n");
+            }
+        }
+        situacoes[i] = nova;
+        printf("Situacao atualizada!\n");
+    }
+}
+
+void excluir() {
+    int codigo, i, j;
+    printf("\nCodigo da acao para excluir: ");
+    scanf("%d", &codigo);
+    i = codigo - 1;
+    if (i < 0 || i >= total) {
+        printf("Codigo invalido.\n");
+    } else {
+        /* Move as acoes seguintes uma posicao para tras. */
+        for (j = i; j < total - 1; j++) {
+            int k;
+            for (k = 0; k < 80; k++) {
+                escolas[j][k] = escolas[j + 1][k];
+                temas[j][k] = temas[j + 1][k];
+                publicos[j][k] = publicos[j + 1][k];
+                responsaveis[j][k] = responsaveis[j + 1][k];
+            }
+            for (k = 0; k < 20; k++) {
+                datas[j][k] = datas[j + 1][k];
+            }
+            participantes[j] = participantes[j + 1];
+            situacoes[j] = situacoes[j + 1];
+        }
+        total--;
+        printf("Acao excluida!\n");
+    }
+}
+
+void filtrar() {
+    int opcao, situacao, i, achou = 0;
+    char escola[80];
+
+    printf("\n1-Listar por situacao\n2-Listar por escola\n");
+    scanf("%d", &opcao);
+    if (opcao == 1) {
+        printf("Situacao (1-Planejada, 2-Andamento, 3-Concluida): ");
+        scanf("%d", &situacao);
+        if (situacao < 1 || situacao > 3) {
+            printf("Situacao invalida.\n");
+        } else {
+            for (i = 0; i < total; i++) {
+                if (situacoes[i] == situacao) {
+                    mostrarAcao(i);
+                    achou = 1;
+                }
+            }
+        }
+    } else if (opcao == 2) {
+        printf("Nome exato da escola: ");
+        scanf(" %79[^\n]", escola);
+        for (i = 0; i < total; i++) {
+            if (textosIguais(escolas[i], escola)) {
+                mostrarAcao(i);
+                achou = 1;
+            }
+        }
+    } else {
+        printf("Opcao invalida.\n");
+        return;
+    }
+    if (achou == 0) {
+        printf("Nenhuma acao encontrada.\n");
+    }
+}
+
+void resumo() {
+    int i, planejadas = 0, andamento = 0, concluidas = 0;
+    int soma = 0;
+
+    for (i = 0; i < total; i++) {
+        if (situacoes[i] == 1) {
+            planejadas++;
+        } else if (situacoes[i] == 2) {
+            andamento++;
+        } else {
+            concluidas++;
+        }
+        soma = soma + participantes[i];
+    }
+    printf("\n=== RESUMO ===\n");
+    printf("Total de acoes: %d\n", total);
+    printf("Planejadas: %d\n", planejadas);
+    printf("Em andamento: %d\n", andamento);
+    printf("Concluidas: %d\n", concluidas);
+    printf("Soma dos participantes: %d\n", soma);
+    printf("(Uma pessoa pode ter participado de mais de uma acao.)\n");
+}
+
+int main(int argc, char *argv[]){
+    int opcao = -1;
+
+    while (opcao != 0) {
+        printf("\n========== PSE ACOLHE ==========\n");
+        printf("1 - Cadastrar acao\n");
+        printf("2 - Listar acoes\n");
+        printf("3 - Pesquisar acao\n");
+        printf("4 - Alterar dados\n");
+        printf("5 - Atualizar situacao\n");
+        printf("6 - Excluir acao\n");
+        printf("7 - Filtrar acoes\n");
+        printf("8 - Gerar resumo\n");
+        printf("0 - Sair\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        if (opcao == 1) {
+            cadastrar();
+        } else if (opcao == 2) {
+            listar();
+        } else if (opcao == 3) {
+            pesquisar();
+        } else if (opcao == 4) {
+            alterar();
+        } else if (opcao == 5) {
+            atualizarSituacao();
+        } else if (opcao == 6) {
+            excluir();
+        } else if (opcao == 7) {
+            filtrar();
+        } else if (opcao == 8) {
+            resumo();
+        } else if (opcao == 0) {
+            printf("Encerrando o PSE Acolhe.\n");
+        } else {
+            printf("Opcao invalida!\n");
+        }
+    }
+    return 0;
+}
